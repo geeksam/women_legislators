@@ -15,8 +15,7 @@ defmodule WomenLegislators do
   
   # With the function parens warnings find out if I should be adding parens even in pipelines.
   def run(time_period \\ "current") do
-    get_file_path(time_period)
-    |> parse_yaml
+    get_parse_yaml(time_period)
     |> filter_females
     |> flatten_term_structure
     |> filter_rep_branch
@@ -27,13 +26,32 @@ defmodule WomenLegislators do
   
   # Check what you did with dates on the terminal
   
-  @spec get_file_path(string) :: string
-  def get_file_path(time_period) do
-    File.cwd! |> Path.join("data/legislators-#{time_period}.yaml")
+  @spec get_parse_yaml(bitstring) :: list(%{})
+  def get_parse_yaml("both") do
+    current_dir = File.cwd!
+    
+    current_legislators = 
+      current_dir
+      |> Path.join("data/legislators-current.yaml")
+      |> parse_yaml
+      
+    historical_legislators =
+      current_dir
+      |> Path.join("data/legislators-historical.yaml")
+      |> parse_yaml
+      
+    historical_legislators ++ current_legislators
   end
   
-  @spec parse_yaml(string) :: list(%{})
-  def parse_yaml(file_path) do
+  @spec get_parse_yaml(bitstring) :: list(%{})
+  def get_parse_yaml(time_period) do
+    File.cwd! 
+    |> Path.join("data/legislators-#{time_period}.yaml")
+    |> parse_yaml
+  end
+  
+  @spec parse_yaml(bitstring) :: list(%{})
+  defp parse_yaml(file_path) do
     YamlElixir.read_from_file(file_path)
   end
   
@@ -65,11 +83,25 @@ defmodule WomenLegislators do
   # Takes date string and converts to ISO formated date, grabs the year, and subtracts year since all terms in house end early.
   # TODO: Date parsing should be split into own function. There are edge cases where term begins and ends in same year.
   # Also long.
-  @spec get_term_years_list(list(%{})) :: list(%{})
+  @spec get_term_years_list(list(%{})) :: list
   def get_term_years_list(rep_terms_maps_list) do
     rep_terms_maps_list
-    |> Enum.map(fn(%{"start" => start, "end" => finish}) -> [Date.from_iso8601!(start).year, Date.from_iso8601!(finish).year - 1] end)
+    |> Enum.map(fn(%{"start" => start, "end" => finish}) -> check_years(Date.from_iso8601!(start), Date.from_iso8601!(finish)) end)
     |> List.flatten
+  end
+  
+  # I really wanted to do in function heads or guard clauses but can't call remote function in them.
+  defp check_years(start, finish) do
+    cond do
+      start.year == finish.year ->
+        [start.year]
+      start.year + 1 == finish.year && finish.month == 1 ->
+        [start.year]
+      finish.month == 1 ->
+        [start.year, finish.year - 1]
+      true -> 
+        Enum.to_list start.year..finish.year 
+    end
   end
   
   @spec count_females_per_year(list(%{})) :: list(%{})
