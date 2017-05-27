@@ -1,21 +1,15 @@
 defmodule WomenLegislators do
   @moduledoc """
-  Documentation for WomenLegislators.
+  Parses a yaml file for female legislators and prints hashes to represent
+  number of women in House of Representatives each year.
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> WomenLegislators.hello
-      :world
-
+  Processes the yaml file.
   """
-  
-  # With the function parens warnings find out if I should be adding parens even in pipelines.
   def run(time_period \\ "current") do
-    get_parse_yaml(time_period)
+    get_file_path(time_period)
+    |> parse_yaml
     |> filter_females
     |> flatten_term_structure
     |> filter_rep_branch
@@ -24,30 +18,27 @@ defmodule WomenLegislators do
     |> print_histogram
   end
   
-  # Check what you did with dates on the terminal
   
-  @spec get_parse_yaml(bitstring) :: list(%{})
-  def get_parse_yaml("both") do
+  @spec get_file_path(bitstring) :: list(%{})
+  def get_file_path(time_period \\ "current") 
+  def get_file_path("both") do
     current_dir = File.cwd!
     
     current_legislators = 
       current_dir
       |> Path.join("data/legislators-current.yaml")
-      |> parse_yaml
       
     historical_legislators =
       current_dir
       |> Path.join("data/legislators-historical.yaml")
-      |> parse_yaml
       
     historical_legislators ++ current_legislators
   end
   
-  @spec get_parse_yaml(bitstring) :: list(%{})
-  def get_parse_yaml(time_period) do
+  @spec get_file_path(bitstring) :: list(%{})
+  def get_file_path(time_period) do
     File.cwd! 
     |> Path.join("data/legislators-#{time_period}.yaml")
-    |> parse_yaml
   end
   
   @spec parse_yaml(bitstring) :: list(%{})
