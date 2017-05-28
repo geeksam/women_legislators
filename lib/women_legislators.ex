@@ -54,6 +54,7 @@ defmodule WomenLegislators do
   
   # I think that I could get rid of this step. Haven't played with data enough to know yet.
   # But for now it throws away everything but terms
+
   @spec flatten_term_structure(list(%{})) :: list(%{})
   def flatten_term_structure(only_females_maps_list) do
     only_females_maps_list
@@ -63,6 +64,7 @@ defmodule WomenLegislators do
   # Throwing away any terms that were not in house of reps.
   # Returns a list of maps.
   # Maybe it would make sense to combine with above function?
+
   @spec filter_rep_branch(list(%{})) :: list(%{})
   def filter_rep_branch(terms_maps_list) do
     terms_maps_list
@@ -74,6 +76,7 @@ defmodule WomenLegislators do
   # Takes date string and converts to ISO formated date, grabs the year, and subtracts year since all terms in house end early.
   # TODO: Date parsing should be split into own function. There are edge cases where term begins and ends in same year.
   # Also long.
+
   @spec get_term_years_list(list(%{})) :: list
   def get_term_years_list(rep_terms_maps_list) do
     rep_terms_maps_list
@@ -82,6 +85,7 @@ defmodule WomenLegislators do
   end
   
   # I really wanted to do in function heads or guard clauses but can't call remote function in them.
+
   defp check_years(start, finish) do
     cond do
       start.year == finish.year ->
@@ -104,6 +108,7 @@ defmodule WomenLegislators do
   
   # Should we include in the function name that the list is being sorted?
   # Something like sort_then_print_histogram
+
   def print_histogram(house_females_maps_list) do
     house_females_maps_list
     |> Enum.sort(&(&1.year <= &2.year)) 
