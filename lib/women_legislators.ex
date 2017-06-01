@@ -77,8 +77,6 @@ defmodule WomenLegislators do
   Using finish instead of end as that seemed to break things.
   Takes date string and converts to ISO formated date, grabs the year, and
   subtracts year since all terms in house end early.
-  TODO: Date parsing should be split into own function. There are edge cases
-  where term begins and ends in same year. Also long.
   """
   @spec get_term_years_list(list(%{})) :: list
   def get_term_years_list(rep_terms_maps_list) do
