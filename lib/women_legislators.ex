@@ -23,15 +23,15 @@ defmodule WomenLegislators do
   def get_file_path("both") do
     current_dir = File.cwd!
 
-    current_legislators =
+    current_path =
       current_dir
       |> Path.join("data/legislators-current.yaml")
 
-    historical_legislators =
+    historical_path =
       current_dir
       |> Path.join("data/legislators-historical.yaml")
-
-    historical_legislators ++ current_legislators
+    
+    [historical_path, current_path]
   end
 
   @spec get_file_path(bitstring) :: list(%{})
@@ -40,8 +40,15 @@ defmodule WomenLegislators do
     |> Path.join("data/legislators-#{time_period}.yaml")
   end
 
+  def parse_yaml([historical_path, current_path]) do
+    historical_data = YamlElixir.read_from_file(historical_path)
+    current_data    = YamlElixir.read_from_file(current_path)
+
+    historical_data ++ current_data
+  end
+
   @spec parse_yaml(bitstring) :: list(%{})
-  defp parse_yaml(file_path) do
+  def parse_yaml(file_path) do
     YamlElixir.read_from_file(file_path)
   end
 
