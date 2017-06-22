@@ -92,16 +92,6 @@ my 2013     ####################################################################
 my 2016     #########################################################################################
 ```
 
-### Resources
-
-### Constraints
-
-* Most people filter the start year of the House of Representatives out
-  of the data (because the were no women).  A lot of people then
-  hardcode for the histogram.  (Honestly, that's fine.  It's not like it
-  changes, which makes a great talking point.)  It's an extra challenge
-  if you push them to get it from the data though.
-
 ### Spec: in progressive difficulty
 
 * Just handle the `legislators-current.yaml` data.  It's fine to just
